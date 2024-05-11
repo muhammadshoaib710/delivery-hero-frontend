@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { useAuthContext } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
 
 const schema = yup.object().shape({
@@ -28,7 +27,6 @@ const schema = yup.object().shape({
 });
 
 export const SignUp = () => {
-	const { setIsLogged } = useAuthContext();
 	const navigate = useNavigate();
 	const {
 		register,
@@ -48,23 +46,26 @@ export const SignUp = () => {
 				},
 				body: JSON.stringify(data),
 			});
-
+	console.log(response)
 			const responseData = await response.json();
-
-			if (response.ok) {
-				console.log('Signup successful:', responseData);
-				localStorage.setItem('user', JSON.stringify(responseData));
-
-				setIsLogged(true);
-				navigate('/dashboard');
-				toast.success('Signup successful');
-				reset();
-			} else {
-				console.error('Signup failed:', responseData.error);
-				toast.error(responseData.error);
+	
+			if (!response.ok) {
+				// Log the error response for debugging
+				console.error('Signup error response:', responseData);
+	
+				// Display a more specific error message if the server provides it
+				const errorMessage = responseData.message || `Server error: ${response.status}`;
+				throw new Error(errorMessage);
 			}
+	
+			console.log('Signup successful:', responseData);
+			
+			navigate('/confirmotp');
+			toast.success('Signup successful');
+			reset();
 		} catch (error) {
 			console.error('Error during signup:', error.message);
+			toast.error(`Error during signup: ${error.message}`);
 		}
 	};
 	return (

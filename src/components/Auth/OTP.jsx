@@ -1,10 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
+import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
+import { useAuthContext } from '../../context/AuthContext';
 
 export const OTP = () => {
+    const { setIsLogged } = useAuthContext();
   const [otp, setOtp] = useState(new Array(6).fill(''));
   const [otpError, setOtpError] = useState('');
   const otpBoxReference = useRef([]);
-
+const navigate=useNavigate();
   const handleChange = (value, index) => {
     const newOtp = [...otp];
     newOtp[index] = value;
@@ -24,7 +28,51 @@ export const OTP = () => {
       // Here you can add the submit function
     }
   };
-
+  const validateOTP=async()=>{
+    const otpValue = otp.join('');
+    if (otpValue.length !== 6) {
+      setOtpError('Please enter a 6 digit OTP');
+    } else {
+      setOtpError('');
+      // Here you can add the submit function
+      try {
+        const response = await fetch('/api/auth/verifyotp', {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ otp: otpValue }), // Ensure otpValue is correctly structured
+        });
+    
+        if (!response.ok) {
+            // Attempt to read the response as text first to avoid JSON parsing errors
+            const contentType = response.headers.get('Content-Type');
+            if (contentType && contentType.includes('application/json')) {
+                const errorData = await response.json();
+                console.error('Error verifying OTP:', errorData);
+                toast.error(errorData);
+                throw new Error(errorData.message || `Server error: ${response.status}`);
+            } else {
+                // Handle non-JSON responses, possibly HTML error pages
+                const errorText = await response.text();
+                console.error('Error verifying OTP:', errorText);
+                throw new Error(`Server returned a non-JSON response: ${response.status}`);
+            }
+        }
+    
+        const responseData = await response.json();
+        console.log('OTP verification successful:', responseData);
+        toast.success('OTP verification successful')
+        localStorage.setItem('user', JSON.stringify(responseData));
+			setIsLogged(true);
+        navigate('/dashboard');
+    } catch (error) {
+        console.error('Error during OTP verification:', error);
+        toast.error('Error during OTP verification')
+        //window.location.reload();
+    }
+     }
+    }
   useEffect(() => {
     otpBoxReference.current[0].focus();
   }, []);
@@ -47,9 +95,9 @@ export const OTP = () => {
         ))}
       </div>
       <div className="text-center mt-4">
-        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={validateOTP}>
           Verify
-        </button>
+        </button >
       </div>
       <p className={`text-lg text-white mt-4 ${otpError ? 'error-show' : ''}`}>{otpError}</p>
     </article>

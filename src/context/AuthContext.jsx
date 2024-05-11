@@ -25,14 +25,20 @@ export function AuthProvider({ children }) {
 				method: 'POST', // or 'GET' depending on your server's configuration
 				headers: { 'Content-Type': 'application/json' }, // Include credentials (cookies) in the request
 			});
-			const data = await response.json();
+	
+			// Check if the response has content before parsing it as JSON
+			const data = response.headers.get('content-length') > 0 ? await response.json() : {};
+	
+			// Assuming your API returns an error field in JSON when there's an error
 			if (data.error) {
 				throw new Error(data.error);
 			}
+	
 			localStorage.removeItem('user');
 			setUser(null);
 			setIsLogged(false);
 			toast.success('Logged out successfully');
+			// Consider using react-router for navigation instead of reloading the page
 			window.location.reload();
 		} catch (error) {
 			console.error(error);

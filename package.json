@@ -13,6 +13,7 @@
     "@hookform/resolvers": "^3.3.4",
     "antd": "^5.15.3",
     "apexcharts": "^3.47.0",
+    "axios": "^1.6.8",
     "framer-motion": "^11.0.10",
     "jsbarcode": "^3.11.6",
     "jspdf": "^2.5.1",
