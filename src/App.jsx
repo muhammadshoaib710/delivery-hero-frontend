@@ -10,7 +10,7 @@ import { FeaturesPages } from './pages/Features/FeaturesPages';
 import { Error404 } from './pages/error/Error404';
 import { TrackOrderHome } from './pages/TrackOrder/TrackOrderHome';
 import { DetailOrder } from './components/TrackOrder/DetailOrder';
-
+import { OTP } from './components/Auth/OTP';
 function App() {
 	return (
 		<>
@@ -57,6 +57,11 @@ function App() {
 						path='/*'
 						element={<Error404 />}
 					/>
+					<Route
+						path='/confirmotp'
+						element={<OTP/>}
+					/>
+					
 				</Routes>
 			</BrowserRouter>
 		</>
