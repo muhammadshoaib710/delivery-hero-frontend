@@ -201,8 +201,9 @@ function Sidebar() {
 									>
 										<li>
 											<Link to='/'>Home</Link>
-										</li>
+										</li> 
 										<li>
+
 											<button onClick={logout}>Logout</button>
 										</li>
 									</ul>

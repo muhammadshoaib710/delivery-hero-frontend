@@ -34,10 +34,8 @@ export const Login = () => {
       if (response.ok) {
         console.log("Login successful");
         const user = await response.json();
-        // check the status of user
-		console.log(user)
+        console.log(user);
         if (user.status === "verified") {
-		
           localStorage.setItem("user", JSON.stringify(user));
           setUser(user);
           setIsLogged(true);
@@ -97,6 +95,11 @@ export const Login = () => {
                 {errors.password && (
                   <p className="text-error">{errors.password.message}</p>
                 )}
+                <label className="label">
+                  <Link to="/forgot-password" className="label-text-alt link link-hover">
+                    Forgot password?
+                  </Link>
+                </label>
                 <label className="label">
                   <Link to="/signup" className="label-text-alt link link-hover">
                     Don't have an account? Sign up
